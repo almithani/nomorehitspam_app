@@ -1,0 +1,147 @@
+/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
+
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+  font-family: Helvetica, Arial, 'Sans Serif';
+  color: #333;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+	text-align: center;
+	padding-top: 20px;
+}
+
+h1 {
+	font-size: 2em;
+	font-weight: bold;
+}
+
+.btn {
+	height: 50px;
+	line-height: 50px;
+	font-size: 1.25em;
+	font-weight: bold;
+	color: #fff;
+	display: inline-block;
+	padding: 0px 10px;
+	border-radius: 5px;
+	cursor: pointer;
+
+	border: solid 1px #57afc9;
+
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#8fd6eb+0,57afc9+100 */
+	background: #8fd6eb; /* Old browsers */
+	background: -moz-linear-gradient(top, #8fd6eb 0%, #57afc9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#8fd6eb), color-stop(100%,#57afc9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #8fd6eb 0%,#57afc9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #8fd6eb 0%,#57afc9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #8fd6eb 0%,#57afc9 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #8fd6eb 0%,#57afc9 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8fd6eb', endColorstr='#57afc9',GradientType=0 ); /* IE6-9 */
+}
+
+.btn:hover {
+	opacity: 0.75;
+}
+
+#content {
+	padding-top: 40px;
+}
+
+.account-name {
+	width: 100%;
+	padding: 15px;
+	display: block;
+	font-weight: bold;
+	background: #ccc;
+	cursor: pointer;
+}
+
+
+/*
+lightbox styles
+*/
+
+.lightbox-overlay {
+	background: #000;
+	opacity: 0.5;
+	position: fixed;
+	top: 0px;
+	bottom: 0px;
+	width: 100%;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+	z-index: 100;
+}
+
+.lightbox-container {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	background: transparent;
+	z-index: 101;
+}
+
+.lightbox-content {
+	position: relative;
+	margin: auto;
+	background-color: #fff;
+	padding: 10px;
+	border-radius: 3px;
+	top: 50%;
+  	-webkit-transform: translateY(-50%);
+ 	-ms-transform: translateY(-50%);
+  	transform: translateY(-50%);
+  	max-height: 100%;
+  	width: 500px;
+}
+
+.lightbox-content h4 {
+	color: #000;
+	font-size: 1.25em;
+	padding-right: 30px;
+}
+
+.lightbox-btn-close {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	cursor: pointer;
+	color: #fff;
+	border: 1px solid #000;
+	border-radius: 6px;
+	background: #FF4751;
+	font-size: 1.5em;
+	line-height: 0.5em;
+	font-weight: bold;
+	display: inline-block;
+	padding: 3px 5px 5px 5px;
+	text-decoration: none;
+}
+
+@media (max-width: 600px) {
+
+  	.lightbox-content {
+  		top: auto;
+  		transform: none;
+  	}
+
+  	.lightbox-summary .lightbox-content,
+  	.lightbox-about .lightbox-content {
+  		width: 100%;
+  		height: 100%;
+  		overflow: scroll;
+  	}
+
+}
