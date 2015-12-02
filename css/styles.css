@@ -22,14 +22,18 @@ h1 {
 	font-weight: bold;
 }
 
+h2 {
+	font-size: 1.25em;
+	font-weight: bold;
+	margin-bottom: 15px;
+}
+
 .btn {
-	height: 50px;
-	line-height: 50px;
 	font-size: 1.25em;
 	font-weight: bold;
 	color: #fff;
 	display: inline-block;
-	padding: 0px 10px;
+	padding: 12px 10px;
 	border-radius: 5px;
 	cursor: pointer;
 
@@ -54,13 +58,41 @@ h1 {
 	padding-top: 40px;
 }
 
-.account-name {
+.account-list,
+.profile-list {
+	width: 500px;
+	margin: auto;
+}
+
+.btn.account-name,
+.btn.profile-name {
 	width: 100%;
-	padding: 15px;
-	display: block;
-	font-weight: bold;
+	margin-bottom: 15px;
+}
+
+.collect-urls input {
+	display: inline-block;
+	width: 350px;
+	line-height: 1.25em;
+	font-size: 1.1em;
+	padding: 12px 10px;
+	margin-right: 10px;
+}
+
+.url-list {
+	margin: auto;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	font-size: 1.05em;
+	width: 450px;
+}
+
+.url-list li {
+	margin-bottom: 10px;
 	background: #ccc;
-	cursor: pointer;
+	border-radius: 5px;
+	width: 100%;
+	padding: 5px;
 }
 
 

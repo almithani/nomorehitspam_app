@@ -1,38 +1,142 @@
-window.Profile = React.createClass({
+window.UrlItem = React.createClass({
+
+	render: function() {
+		var liClass = "unsaved";
+		if( this.props.curState==2 ) {	liClass="saving"; }
+		else if( this.props.curState==3 ) {	liClass="saved"; }
+		else if( this.props.curState==4 ) {	liClass="error"; }
+
+		return (
+			<li className={liClass}>{this.props.url} ({liClass})</li>
+		);
+	}
+});
+
+window.CollectUrls = React.createClass({
+	UNSAVED: 1,
+	SAVING: 2,
+	SAVED: 3,
+	ERROR: -1,
 
 	getInitialState: function() {
 		return {
-			selected: false
+			urls: []
 		}
 	},
 
-	showLightbox: function() {
+	addItem: function() {
+		var inputVal = this.refs.inputUrl.value;
+		var urlItem = {
+			url: inputVal,
+			curState: this.UNSAVED
+		}
+		var newUrls = _.union( this.state.urls, [urlItem] );
+
 		this.setState({
-			selected: true
-		});
+			urls: newUrls
+		})
 	},
 
-	hideLightbox: function() {
+	updateItem: function(key, state) {
+		this.state.urls[key].curState = state;
 		this.setState({
-			selected: false
-		});
+			urls: this.state.urls
+		})
 	},
 
-	render: function() {
+	save: function() {
+		var accountId = this.props.profile.accountId;
+		var profileId = this.props.profile.id;
+		var propertyId = this.props.profile.webPropertyId;
+
+		var updateItem = this.updateItem;
+		var savingState = this.SAVING;
+		var savedState = this.SAVED;
+		var errorState = this.ERROR;
+
+		_.each(this.state.urls, function(url, key) {
+
+			updateItem( key, savingState);
+
+			var params = {
+				accountId: accountId,
+				name: "nomorehitspam - "+url.url,
+				type: "EXCLUDE",
+				excludeDetails: {
+					field: "REFERRAL",
+					expressionValue: ".*"+url.url+".*"					
+				}
+			}
+			gapi.client.analytics.management.filters.insert(params).then(function(response){
+				
+				var linkParams = {
+					accountId: accountId,
+					profileId: profileId,
+					webPropertyId: propertyId,
+					filterRef: {
+						id: response.result.id
+					}
+				}
+				gapi.client.analytics.management.profileFilterLinks.insert(linkParams).then(function(response){
+					console.log(response);
+
+					if( response.error ) {
+						updateItem( key, errorState);
+					} else {
+						updateItem( key, savedState);
+					}	
+				});
+			});
+		});
+
+	},
+
+render: function() {
 
 		var profileName = this.props.profile.websiteUrl+' - '+this.props.profile.name;
 
-		var lightbox = '';
-		if( this.state.selected ) {
-			lightbox = <CollectUrlsLightbox 
-							profile={this.props.profile}
-							closeLightbox={this.hideLightbox} />
+		var urlItems = [];
+		_.each(this.state.urls, function(url){
+			urlItems.push(<UrlItem 
+								url={url.url} 
+								curState={url.curState}
+								key={url.url} />);
+		});
+
+		var saveButton = '';
+		if(this.state.urls.length > 0) {
+			saveButton = <a onClick={this.save} className="btn">save filters</a>;
 		}
 
 		return (
+			<div className="collect-urls">
+				<h2>Add filters for {profileName}:</h2>
+				<input 
+					type="text" 
+					placeholder="enter the url of the hit spam..."
+					ref="inputUrl" /> 
+				<a onClick={this.addItem} className="btn">add</a>
+
+				<ul className="url-list">
+				{urlItems}
+				</ul>
+
+				{saveButton}
+			</div>
+		);
+	}
+});
+
+window.Profile = React.createClass({
+
+	nextStep: function() {
+		this.props.gotoNextStep(this.props.profile);
+	},
+
+	render: function() {
+		return (
 			<li>
-				<a onClick={this.showLightbox}>{profileName}</a>
-				{lightbox}
+				<a onClick={this.nextStep} className="btn profile-name">{this.props.profile.name}</a>
 			</li>
 		);
 	}
@@ -43,14 +147,21 @@ window.ProfileList = React.createClass({
 	render: function() {
 
 		var profiles = [];
+		var gotoNextStep = this.props.gotoNextStep;
 		_.each(this.props.profiles, function(profile) {
-			profiles.push(<Profile profile={profile} />);
+			profiles.push(<Profile 
+								gotoNextStep={gotoNextStep} 
+								profile={profile} 
+								key={profile.id} />);
 		});
 
 		return (
-			<ul>
-				{profiles}
-			</ul>
+			<div>
+				<h2>Select a view to filter spam from:</h2>
+				<ul className="profile-list">
+					{profiles}
+				</ul>
+			</div>
 		);
 	}
 });
@@ -75,7 +186,7 @@ window.Account = React.createClass({
 			webPropertyId: '~all'
 		}
 
-		var setProfiles = this.setProfiles;
+		var setProfiles = this.props.gotoNextStep;
 		gapi.client.analytics.management.profiles.list(params).then(function(response) {
 			setProfiles(response.result.items);
 		});
@@ -84,8 +195,7 @@ window.Account = React.createClass({
 	render: function() {
 		return (
 			<li className="account">
-				<a onClick={this.getProfiles} className="account-name">{this.props.account.name}</a>
-				<ProfileList profiles={this.state.profiles} />
+				<a onClick={this.getProfiles} className="btn account-name">{this.props.account.name}</a>
 			</li>
 		);
 	}
@@ -94,14 +204,21 @@ window.Account = React.createClass({
 window.AccountList = React.createClass({
 	render: function() {
 		var accounts = [];
+		var gotoNextStep = this.props.gotoNextStep;
 		_.each(this.props.accounts, function(account){
-			accounts.push(<Account account={account} />);
+			accounts.push(<Account 
+								gotoNextStep={gotoNextStep} 
+								account={account} 
+								key={account.id} />);
 		});
 
 		return(
-			<ul>
-				{accounts}
-			</ul>
+			<div>
+				<h2>Select a website to filter spam from:</h2>
+				<ul className="account-list">
+					{accounts}
+				</ul>
+			</div>
 		);
 	}
 });
@@ -157,7 +274,9 @@ window.AppFlow = React.createClass({
 	getInitialState: function() {
 		return {
 			currentStep: 1,
-			gaAccounts: []
+			gaAccounts: [],
+			gaProfiles: [],
+			selectedProfile: null,
 		}
 	},
 
@@ -168,13 +287,45 @@ window.AppFlow = React.createClass({
 		})
 	},
 
+	gotoStep3: function(profiles) {
+		this.setState({
+			currentStep: 3,
+			gaProfiles: profiles
+		});
+	},
+
+	gotoStep4: function(profile) {
+		this.setState({
+			currentStep: 4,
+			selectedProfile: profile
+		});
+	},
+
 	render: function() {
 		switch( this.state.currentStep ) {
-			case 2: 
+			case 4:
 				return (
-					<AccountList accounts={this.state.gaAccounts} />
+					<CollectUrls
+						profile={this.state.selectedProfile} />
 				);
 				break;
+
+			case 3:
+				return (
+					<ProfileList 
+						gotoNextStep={this.gotoStep4}
+						profiles={this.state.gaProfiles} />
+				);
+				break;
+
+			case 2: 
+				return (
+					<AccountList 
+						gotoNextStep={this.gotoStep3}
+						accounts={this.state.gaAccounts} />
+				);
+				break;
+
 			case 1: 
 			default: 
 				return (
